@@ -249,12 +249,4 @@ function fai_findbuildspot(id)
 		vai_mode[id]=0
 		vai_smode[id]=0
 	end
-	-- make sure our destination is a walkable tile
-	if not tile(vai_destx[id],vai_desty[id], "walkable") then
-		vai_mode[id]=0
-		vai_smode[id]=0
-		if vai_set_debug==1 then
-			print("build spot not walkable")
-		end
-	end
 end

@@ -25,51 +25,57 @@ function fai_decide(id)
 					vai_destx[id],vai_desty[id]=randomentity(1) -- info_ct
 					vai_mode[id]=2
 				end
-			elseif r==2 then
-				fai_randommaptile(id) -- Random map tile
-				vai_mode[id]=2
-			elseif r==3 then --CHEAT! Go to a living CT
+			elseif r==2 then --CHEAT! Go to a living CT
 				for i=1,20 do --20 searches
 					local rp=math.random(1,#player(0,"table"))
 					if player(rp,"exists") and player(rp,"team")==2 then
-						vai_destx[id]=player(rp,"tilex")
-						vai_desty[id]=player(rp,"tiley")
-						vai_mode[id]=2
+						vai_mode[id]=5
+						vai_smode[id]=rp
 						break
 					end
 				end
 			else
-				-- Goto T Spawn
-				vai_destx[id],vai_desty[id]=randomentity(0) -- info_t
-				vai_mode[id]=2
-			end
-		else
-			------------------- Counter-Terrorists
-			local r=math.random(1,4)
-			if r==1 then
-				-- Goto T Spawn -- going to T spawn is stupid in zombies game mode. It's basically wanting death.
-				-- vai_destx[id],vai_desty[id]=randomentity(0) -- info_t
-				-- vai_mode[id]=2
-				fai_randommaptile(id) -- go to a random place in the map instead
-				vai_mode[id]=2
-			elseif r==2 then -- go to a random teammate
-				local target=fai_randommate(id)
-				if target>0 then
-					vai_destx[id]=player(target,"tilex")
-					vai_desty[id]=player(target,"tiley")
-					vai_mode[id]=2
-				else
-					fai_randommaptile(id)
-					vai_mode[id]=2
-				end
-			else
-				-- Goto CT Spawn / Botnode
+				-- Goto CT Spawn
 				if map("botnodes")>0 and math.random(0,2)==1 then
 					vai_destx[id],vai_desty[id]=randomentity(19) -- info_botnode
 					vai_mode[id]=2
 				else
 					vai_destx[id],vai_desty[id]=randomentity(1) -- info_ct
 					vai_mode[id]=2
+				end
+			end
+		else
+			------------------- Counter-Terrorists
+			local r=math.random(1,4)
+			if r==1 then
+				fai_randommaptile(id) -- Explore
+				vai_mode[id]=2
+			elseif r==2 then -- Follow a teammate
+				local target=fai_randommate(id)
+				if target>0 then
+					local chat=math.random(1,4)
+					
+					FollowingWho = "I am following" .. player(target,"name")
+					--print(player(id,"name") .. "is following" .. player(target,"name"))
+					
+					if chat==1 then
+						ai_sayteam(id, FollowingWho)
+					end
+					
+					vai_mode[id]=7
+					vai_smode[id]=target
+				else
+					fai_randommaptile(id) -- Explore
+					vai_mode[id]=2
+				end
+			else
+				-- Camp Spawn
+				if map("botnodes")>0 and math.random(0,2)==1 then
+					vai_destx[id],vai_desty[id]=randomentity(19) -- info_botnode
+					vai_mode[id]=9
+				else
+					vai_destx[id],vai_desty[id]=randomentity(1) -- info_ct
+					vai_mode[id]=9
 				end
 			end
 		end
